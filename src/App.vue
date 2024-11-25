@@ -5,10 +5,18 @@
       <div v-if="selectedFolderName" class="selected-folder">
         Выбранная папка: {{ selectedFolderName }}
       </div>
-      <button class="open-modal-btn" @click="openModal">Открыть</button>
+      <div class="action-buttons">
+        <button class="open-modal-btn" @click="openModal">Открыть</button>
+        <button
+            class="delete-selection-btn"
+            :disabled="!selectedFolderId"
+            @click="clearSelection"
+        >
+          Удалить выбор
+        </button>
+      </div>
     </header>
 
-    <!-- Модальное окно с деревом папок -->
     <FolderModal
         v-if="isModalOpen"
         :folders="folders"
@@ -21,8 +29,9 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import FolderModal from "./components/FolderModal.vue";
+import folderData from './folders.json';
 
-interface Folder {
+export interface Folder {
   id: number;
   name: string;
   children: Folder[];
@@ -34,83 +43,7 @@ export default defineComponent({
   setup() {
     const isModalOpen = ref(false);
     const selectedFolderId = ref<number | null>(null);
-   const folders = ref<Folder[]>([
-  {
-    id: 1,
-    name: "Папка 1",
-    children: [
-      { id: 2, name: "Папка 1.1", children: [] },
-      {
-        id: 3,
-        name: "Папка 1.2",
-        children: [
-          { id: 4, name: "Папка 1.2.1", children: [] },
-          {
-            id: 5,
-            name: "Папка 1.2.2",
-            children: [
-              { id: 6, name: "Папка 1.2.2.1", children: [] },
-              { id: 7, name: "Папка 1.2.2.2", children: [] },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 8,
-    name: "Папка 2",
-    children: [
-      { id: 9, name: "Папка 2.1", children: [] },
-      {
-        id: 10,
-        name: "Папка 2.2",
-        children: [
-          { id: 11, name: "Папка 2.2.1", children: [] },
-          { id: 12, name: "Папка 2.2.2", children: [] },
-        ],
-      },
-    ],
-  },
-  {
-    id: 13,
-    name: "Папка 3",
-    children: [
-      {
-        id: 14,
-        name: "Папка 3.1",
-        children: [
-          { id: 15, name: "Папка 3.1.1", children: [] },
-          { id: 16, name: "Папка 3.1.2", children: [] },
-        ],
-      },
-    ],
-  },
-  {
-    id: 17,
-    name: "Папка 4",
-    children: [
-      { id: 18, name: "Папка 4.1", children: [] },
-      {
-        id: 19,
-        name: "Папка 4.2",
-        children: [
-          { id: 20, name: "Папка 4.2.1", children: [] },
-          { id: 21, name: "Папка 4.2.2", children: [] },
-          {
-            id: 22,
-            name: "Папка 4.2.3",
-            children: [
-              { id: 23, name: "Папка 4.2.3.1", children: [] },
-              { id: 24, name: "Папка 4.2.3.2", children: [] },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-]);
-
+    const folders = ref<Folder[]>(folderData.folders);
 
     // Вычисляем имя выбранной папки
     const selectedFolderName = computed(() => {
@@ -132,17 +65,28 @@ export default defineComponent({
     const openModal = () => (isModalOpen.value = true);
 
     const handleSelect = (id: number) => {
-      // Если папка уже выбрана, снимаем выбор
       if (selectedFolderId.value === id) {
-        selectedFolderId.value = null; // Снимаем выбор
+        selectedFolderId.value = null;
       } else {
-        selectedFolderId.value = id; // Выбираем новую папку
+        selectedFolderId.value = id;
       }
-      // Закрываем модальное окно после выбора
       isModalOpen.value = false;
     };
 
-    return { isModalOpen, selectedFolderId, selectedFolderName, folders, openModal, handleSelect };
+    // Сброс выбора папки
+    const clearSelection = () => {
+      selectedFolderId.value = null;
+    };
+
+    return {
+      isModalOpen,
+      selectedFolderId,
+      selectedFolderName,
+      folders,
+      openModal,
+      handleSelect,
+      clearSelection,
+    };
   },
 });
 </script>
@@ -164,21 +108,42 @@ header h1 {
   color: #333;
 }
 
-.open-modal-btn {
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.open-modal-btn,
+.delete-selection-btn {
   padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
+  font-size: 14px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.open-modal-btn {
+  background-color: #007bff;
+  color: white;
 }
 
 .open-modal-btn:hover {
   background-color: #0056b3;
 }
 
-button {
-  cursor: pointer;
+.delete-selection-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-selection-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.delete-selection-btn:hover:not(:disabled) {
+  background-color: #c82333;
 }
 </style>

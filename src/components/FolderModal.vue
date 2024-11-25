@@ -6,8 +6,13 @@
         @select="selectFolder"
     />
     <footer>
-      <button @click="confirm" :disabled="!selectedFolder">Ок</button>
-      <button @click="close">Закрыть</button>
+      <button
+          class="confirm-btn"
+          @click="confirm"
+          :disabled="!selectedFolder"
+      >
+        Ок
+      </button>
     </footer>
   </Modal>
 </template>
@@ -34,7 +39,7 @@ export default defineComponent({
   },
   emits: ["close", "select"],
   setup(_, { emit }) {
-    const selectedFolder = ref<number | null>(null);
+    const selectedFolder = ref<number | undefined>();
 
     const close = () => emit("close");
     const confirm = () => {
@@ -42,11 +47,7 @@ export default defineComponent({
       close();
     };
     const selectFolder = (id: number) => {
-      if (selectedFolder.value === id) {
-        selectedFolder.value = null; // Отменить выбор при повторном клике
-      } else {
-        selectedFolder.value = id; // Выбрать новую папку
-      }
+      selectedFolder.value = selectedFolder.value === id ? undefined : id;
     };
 
     return { selectedFolder, close, confirm, selectFolder };
@@ -57,11 +58,37 @@ export default defineComponent({
 <style scoped>
 footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 10px;
 }
-button:disabled {
-  opacity: 0.5;
-  pointer-events: none;
+
+button {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.confirm-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.confirm-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.confirm-btn:active {
+  background-color: #1e7e34;
+  transform: scale(0.95);
 }
 </style>

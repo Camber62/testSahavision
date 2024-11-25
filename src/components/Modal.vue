@@ -3,7 +3,7 @@
     <div class="modal" @click.stop>
       <header>
         <h2>{{ title }}</h2>
-        <button @click="close">Закрыть</button>
+        <button class="close-btn" @click="close">✖</button>
       </header>
       <main>
         <slot></slot>
@@ -50,10 +50,38 @@ export default defineComponent({
   padding: 20px;
   border-radius: 8px;
   width: 400px;
-  cursor: default; /* Курсор по умолчанию внутри модального окна */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-button {
-  cursor: pointer; /* Курсор на кнопке в модальном окне */
+@keyframes fadeIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #dc3545;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #a71d2a;
 }
 </style>

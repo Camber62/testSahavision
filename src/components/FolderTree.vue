@@ -5,7 +5,10 @@
           @click.stop="selectFolder(folder.id)"
           :class="{ selected: folder.id === selectedFolder }"
       >
-        <span @click.stop="toggle(folder.id)">
+        <span
+            class="folder-icon"
+            @click.stop="toggle(folder.id)"
+        >
           {{ folder.children.length ? (folder.isOpen ? "📂" : "📁") : "📄" }}
         </span>
         {{ folder.name }}
@@ -59,6 +62,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.folder-icon {
+  cursor: pointer;
+}
+
 .selected {
   font-weight: bold;
   color: blue;
